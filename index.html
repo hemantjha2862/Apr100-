@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APR Calculator — College Vidya</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cv-orange:     #FF6B35;
+    --cv-orange-d:   #E8531A;
+    --cv-orange-l:   #FF8C5A;
+    --cv-orange-bg:  #FFF0EB;
+    --cv-orange-pale:#FFF7F4;
+    --cv-navy:       #1A1F4B;
+    --cv-navy-l:     #252C6B;
+    --cv-navy-mid:   #3D4580;
+    --cv-gray:       #6B7280;
+    --cv-gray-l:     #9CA3AF;
+    --cv-border:     #E5E7EB;
+    --cv-surface:    #F9FAFB;
+    --white:         #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--cv-surface);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Topbar ── */
+  .topbar {
+    height: 60px;
+    background: var(--white);
+    border-bottom: 1px solid var(--cv-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.75rem;
+    flex-shrink: 0;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--cv-orange);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo-icon svg { width: 20px; height: 20px; }
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+  .logo-main {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--cv-navy);
+    letter-spacing: -0.01em;
+  }
+  .logo-main span { color: var(--cv-orange); }
+  .logo-tagline {
+    font-size: 10px;
+    color: var(--cv-gray);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .tool-chip {
+    background: var(--cv-orange-bg);
+    color: var(--cv-orange-d);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,107,53,0.2);
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Layout ── */
+  .main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    overflow: hidden;
+  }
+
+  /* ── Left Panel ── */
+  .left {
+    background: var(--white);
+    border-right: 1px solid var(--cv-border);
+    overflow-y: auto;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .left-header h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cv-navy);
+    margin-bottom: 4px;
+  }
+  .left-header p {
+    font-size: 12px;
+    color: var(--cv-gray);
+    line-height: 1.5;
+  }
+
+  .sec-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .sec-label-bar {
+    width: 3px;
+    height: 14px;
+    background: var(--cv-orange);
+    border-radius: 2px;
+  }
+  .sec-label-text {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--cv-navy);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--cv-navy-mid);
+  }
+  .field input[type="number"] {
+    height: 40px;
+    border: 1.5px solid var(--cv-border);
+    border-radius: 8px;
+    padding: 0 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--cv-navy);
+    background: var(--cv-surface);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    -moz-appearance: textfield;
+    width: 100%;
+  }
+  .field input::-webkit-inner-spin-button { opacity: 0; }
+  .field input:focus {
+    border-color: var(--cv-orange);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(255,107,53,0.12);
+  }
+  .field-hint { font-size: 10px; color: var(--cv-gray-l); }
+
+  .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tog {
+    border: 1.5px solid var(--cv-border);
+    border-radius: 10px;
+    padding: 12px;
+    background: var(--cv-surface);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+  }
+  .tog:hover { border-color: var(--cv-orange-l); background: var(--cv-orange-pale); }
+  .tog.active {
+    border-color: var(--cv-orange);
+    background: var(--cv-orange-bg);
+  }
+  .tog-ico {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    background: rgba(255,107,53,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
+  .tog.active .tog-ico { background: rgba(255,107,53,0.2); }
+  .tog-t {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--cv-navy);
+    margin-bottom: 2px;
+  }
+  .tog.active .tog-t { color: var(--cv-orange-d); }
+  .tog-s { font-size: 10px; color: var(--cv-gray); line-height: 1.4; }
+  .tog.active .tog-s { color: var(--cv-orange); }
+
+  .formula-box {
+    background: var(--cv-navy);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .formula-box-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .formula-box p {
+    font-size: 11px;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.7;
+  }
+  .formula-box code {
+    font-family: 'Courier New', monospace;
+    color: var(--cv-orange-l);
+    font-size: 11px;
+    background: rgba(255,107,53,0.15);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  /* ── Right Panel ── */
+  .right {
+    overflow-y: auto;
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    background: var(--cv-surface);
+  }
+
+  .right-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .right-head h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cv-navy);
+  }
+  .live-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--cv-orange-d);
+    background: var(--cv-orange-bg);
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,107,53,0.2);
+  }
+  .live-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cv-orange);
+    animation: blink 1.5s ease infinite;
+  }
+  @keyframes blink {
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:0.3;transform:scale(0.6)}
+  }
+
+  /* Gauge hero card */
+  .gauge-card {
+    background: var(--cv-navy);
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .gauge-card::before {
+    content: '';
+    position: absolute;
+    right: -50px; top: -50px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(255,107,53,0.08);
+  }
+  .gauge-card::after {
+    content: '';
+    position: absolute;
+    right: 60px; bottom: -60px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255,107,53,0.05);
+  }
+  .gauge-left { flex: 1; }
+  .gauge-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 6px;
+  }
+  .gauge-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    line-height: 1;
+    color: white;
+    transition: color 0.4s;
+  }
+  .gauge-pct { font-size: 28px; color: rgba(255,255,255,0.5); }
+  .gauge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 999px;
+    transition: all 0.3s;
+  }
+  .gs-idle  { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); }
+  .gs-good  { background: rgba(34,197,94,0.18); color: #86efac; border: 1px solid rgba(34,197,94,0.25); }
+  .gs-warn  { background: rgba(255,107,53,0.2); color: #ffb38a; border: 1px solid rgba(255,107,53,0.3); }
+  .gs-bad   { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2); }
+
+  .gauge-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    z-index: 1;
+  }
+  .gauge-mini {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 10px 14px;
+    text-align: right;
+    min-width: 110px;
+  }
+  .gauge-mini-label { font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 500; margin-bottom: 2px; }
+  .gauge-mini-val   { font-size: 18px; font-weight: 600; color: white; }
+
+  /* Progress bar */
+  .bar-card {
+    background: var(--white);
+    border: 1px solid var(--cv-border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+  }
+  .bar-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .bar-head-title { font-size: 13px; font-weight: 600; color: var(--cv-navy); }
+  .bar-head-val   { font-size: 13px; font-weight: 600; color: var(--cv-orange); }
+  .bar-track {
+    height: 10px;
+    background: var(--cv-surface);
+    border-radius: 999px;
+    position: relative;
+    overflow: visible;
+    border: 1px solid var(--cv-border);
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.55s cubic-bezier(.4,0,.2,1), background 0.3s;
+    background: var(--cv-orange);
+  }
+  .bar-fill.g { background: #22c55e; }
+  .bar-fill.w { background: var(--cv-orange); }
+  .bar-fill.b { background: var(--cv-orange-l); }
+  .bar-tick {
+    position: absolute;
+    top: -5px; bottom: -5px;
+    left: 99%;
+    width: 2px;
+    background: var(--cv-navy-mid);
+    border-radius: 999px;
+  }
+  .bar-tick-label {
+    position: absolute;
+    top: -20px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--cv-navy);
+    white-space: nowrap;
+    background: rgba(26,31,75,0.08);
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  .bar-ticks { display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: var(--cv-gray-l); }
+
+  /* Metrics row */
+  .metric-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .met-card {
+    background: var(--white);
+    border: 1px solid var(--cv-border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .met-card.hi { border-color: var(--cv-orange); }
+  .met-card-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--cv-border);
+    transition: background 0.3s;
+  }
+  .met-card.hi .met-card-bar { background: var(--cv-orange); }
+  .met-label { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cv-gray); margin-bottom: 6px; }
+  .met-val { font-size: 26px; font-weight: 700; color: var(--cv-navy); line-height: 1; }
+  .met-val.hi { color: var(--cv-orange-d); }
+  .met-sub { font-size: 10px; color: var(--cv-gray-l); margin-top: 3px; }
+
+  /* Answer card */
+  .ans-card {
+    background: var(--cv-orange);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    transition: background 0.4s;
+  }
+  .ans-card.met { background: #15803d; }
+  .ans-icon {
+    width: 46px; height: 46px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .ans-body { flex: 1; }
+  .ans-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 6px; }
+  .ans-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 44px;
+    color: white;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .ans-desc { font-size: 12px; color: rgba(255,255,255,0.8); line-height: 1.5; margin-bottom: 10px; }
+  .ans-formula {
+    font-size: 10px;
+    font-family: 'Courier New', monospace;
+    color: rgba(255,255,255,0.55);
+    background: rgba(0,0,0,0.15);
+    border-radius: 7px;
+    padding: 8px 12px;
+    white-space: pre-line;
+    line-height: 1.6;
+  }
+
+  /* Placeholder */
+  .placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+    gap: 12px;
+    flex: 1;
+  }
+  .ph-icon {
+    width: 60px; height: 60px;
+    background: var(--cv-orange-bg);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+  }
+  .placeholder h3 { font-size: 15px; font-weight: 600; color: var(--cv-navy); }
+  .placeholder p  { font-size: 12px; color: var(--cv-gray); line-height: 1.6; }
+
+  .hidden { display: none !important; }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-thumb { background: var(--cv-border); border-radius: 999px; }
+
+  /* ── Floating corner widget ── */
+  .corner-widget {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 999;
+    background: var(--cv-navy);
+    border-radius: 16px;
+    padding: 16px 20px;
+    min-width: 220px;
+    box-shadow: 0 8px 32px rgba(26,31,75,0.25), 0 2px 8px rgba(26,31,75,0.12);
+    border: 1px solid rgba(255,255,255,0.07);
+    transition: all 0.35s cubic-bezier(.4,0,.2,1);
+    display: none;
+  }
+  .corner-widget.visible { display: block; }
+  .cw-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .cw-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+  }
+  .cw-icon {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    background: rgba(255,107,53,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cw-main {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .cw-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    line-height: 1;
+    color: var(--cv-orange);
+    transition: color 0.3s;
+  }
+  .cw-num.done { color: #4ade80; }
+  .cw-unit {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.55);
+  }
+  .cw-desc {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.4;
+  }
+  .cw-desc strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+  .cw-divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    margin: 10px 0;
+  }
+  .cw-footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cw-bar-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .cw-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--cv-orange);
+    transition: width 0.5s cubic-bezier(.4,0,.2,1), background 0.3s;
+  }
+  .cw-bar-fill.done { background: #4ade80; }
+  .cw-pct-small {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.4);
+    min-width: 30px;
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 20 20" fill="none">
+        <path d="M10 2L12.5 7.5H18L13.5 11L15.5 17L10 13.5L4.5 17L6.5 11L2 7.5H7.5L10 2Z" fill="white"/>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <div class="logo-main">College <span>Vidya</span></div>
+      <div class="logo-tagline">India's Top Online Education Advisory Platform</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="tool-chip">APR Calculator</span>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- LEFT: Inputs -->
+  <div class="left">
+    <div class="left-header">
+      <h2>Configure your APR</h2>
+      <p>Enter your actuals and targets, then choose what you want to solve for to hit 100% APR.</p>
+    </div>
+
+    <div>
+      <div class="sec-label"><div class="sec-label-bar"></div><div class="sec-label-text">Actuals (today)</div></div>
+      <div class="grid2">
+        <div class="field">
+          <label>Calls made</label>
+          <input type="number" id="aC" placeholder="e.g. 180" min="0" oninput="calc()">
+          <span class="field-hint">Total calls completed</span>
+        </div>
+        <div class="field">
+          <label>Talk time (min)</label>
+          <input type="number" id="aM" placeholder="e.g. 96" min="0" oninput="calc()">
+          <span class="field-hint">Total minutes on calls</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-label"><div class="sec-label-bar"></div><div class="sec-label-text">Daily Targets</div></div>
+      <div class="grid2">
+        <div class="field">
+          <label>Target calls</label>
+          <input type="number" id="tC" value="200" min="1" oninput="calc()">
+        </div>
+        <div class="field">
+          <label>Target minutes</label>
+          <input type="number" id="tM" value="90" min="1" oninput="calc()">
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-label"><div class="sec-label-bar"></div><div class="sec-label-text">Solve For (to reach 100%)</div></div>
+      <div class="toggle-grid">
+        <button class="tog active" id="b-calls" onclick="setMode('calls')">
+          <div class="tog-ico">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <rect x="1" y="3" width="4" height="10" rx="1.5" fill="#FF6B35"/>
+              <rect x="7" y="1" width="4" height="12" rx="1.5" fill="#FF6B35" opacity=".4"/>
+            </svg>
+          </div>
+          <div class="tog-t">Calls needed</div>
+          <div class="tog-s">Min calls to hit 100% given my talk time</div>
+        </button>
+        <button class="tog" id="b-mins" onclick="setMode('mins')">
+          <div class="tog-ico">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="7" cy="7" r="5.5" stroke="#FF6B35" stroke-width="1.5"/>
+              <path d="M7 4.5V7.5L9 9" stroke="#FF6B35" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="tog-t">Minutes needed</div>
+          <div class="tog-s">Min talk time to hit 100% given my calls</div>
+        </button>
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="formula-box-title">How APR is calculated</div>
+      <p>
+        <code>APR = (Call% + Talk Time%) ÷ 2</code><br>
+        To hit 100%, both metrics must average to 100.<br>
+        So unknown% = <code>200% − known%</code>, then multiply by target.
+      </p>
+    </div>
+  </div>
+
+  <!-- RIGHT: Visualization -->
+  <div class="right">
+    <div class="right-head">
+      <h2>Live performance</h2>
+      <div class="live-pill"><div class="live-dot"></div>Real-time</div>
+    </div>
+
+    <!-- Placeholder -->
+    <div class="placeholder" id="placeholder">
+      <div class="ph-icon">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <rect x="4" y="14" width="5" height="10" rx="2" fill="#FF6B35"/>
+          <rect x="11" y="9" width="5" height="15" rx="2" fill="#FF6B35" opacity=".6"/>
+          <rect x="18" y="4" width="5" height="20" rx="2" fill="#FF6B35" opacity=".3"/>
+        </svg>
+      </div>
+      <h3>Enter your data to begin</h3>
+      <p>Fill in your calls made and talk time on the left<br>to see your live APR performance here.</p>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="hidden" style="display:flex;flex-direction:column;gap:1.25rem">
+
+      <!-- Gauge card -->
+      <div class="gauge-card">
+        <div class="gauge-left">
+          <div class="gauge-eyebrow">Activity Performance Ratio</div>
+          <div class="gauge-big" id="apr-big">—<span class="gauge-pct">%</span></div>
+          <div><span class="gauge-status gs-idle" id="gauge-status">—</span></div>
+        </div>
+        <div class="gauge-right">
+          <div class="gauge-mini">
+            <div class="gauge-mini-label">Call %</div>
+            <div class="gauge-mini-val" id="g-cpct">—</div>
+          </div>
+          <div class="gauge-mini">
+            <div class="gauge-mini-label">Talk time %</div>
+            <div class="gauge-mini-val" id="g-mpct">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="bar-card">
+        <div class="bar-head">
+          <span class="bar-head-title">Progress toward 100% target</span>
+          <span class="bar-head-val" id="bar-label">—</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-tick"><span class="bar-tick-label">100% target</span></div>
+          <div class="bar-fill" id="bar-fill" style="width:0%"></div>
+        </div>
+        <div class="bar-ticks"><span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span></div>
+      </div>
+
+      <!-- Metric cards -->
+      <div class="metric-row">
+        <div class="met-card" id="mc-call">
+          <div class="met-card-bar"></div>
+          <div class="met-label">Call percentage</div>
+          <div class="met-val" id="mc-call-val">—</div>
+          <div class="met-sub" id="mc-call-sub">of target calls</div>
+        </div>
+        <div class="met-card" id="mc-min">
+          <div class="met-card-bar"></div>
+          <div class="met-label">Talk time percentage</div>
+          <div class="met-val" id="mc-min-val">—</div>
+          <div class="met-sub" id="mc-min-sub">of target minutes</div>
+        </div>
+      </div>
+
+      <!-- Answer -->
+      <div class="ans-card" id="ans-card">
+        <div class="ans-icon" id="ans-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="6" width="5" height="12" rx="2" fill="white"/>
+            <rect x="9" y="2" width="5" height="16" rx="2" fill="white" opacity=".5"/>
+          </svg>
+        </div>
+        <div class="ans-body">
+          <div class="ans-eyebrow" id="ans-eyebrow">To reach 80% APR</div>
+          <div class="ans-num" id="ans-num">—</div>
+          <div class="ans-desc" id="ans-desc">—</div>
+          <div class="ans-formula" id="ans-formula">—</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Corner widget -->
+<div class="corner-widget" id="corner-widget">
+  <div class="cw-top">
+    <span class="cw-label" id="cw-label">Remaining to 100% APR</span>
+    <div class="cw-icon">
+      <svg id="cw-svg" width="13" height="13" viewBox="0 0 14 14" fill="none">
+        <rect x="1" y="3" width="4" height="10" rx="1.5" fill="#FF6B35"/>
+        <rect x="7" y="1" width="4" height="12" rx="1.5" fill="#FF6B35" opacity=".4"/>
+      </svg>
+    </div>
+  </div>
+  <div class="cw-main">
+    <span class="cw-num" id="cw-num">—</span>
+    <span class="cw-unit" id="cw-unit">calls</span>
+  </div>
+  <div class="cw-desc" id="cw-desc">remaining to hit target</div>
+  <hr class="cw-divider">
+  <div class="cw-footer">
+    <div class="cw-bar-track">
+      <div class="cw-bar-fill" id="cw-bar" style="width:0%"></div>
+    </div>
+    <span class="cw-pct-small" id="cw-pct">0%</span>
+  </div>
+</div>
+
+<script>
+let mode = 'calls';
+
+function setMode(m) {
+  mode = m;
+  document.getElementById('b-calls').classList.toggle('active', m === 'calls');
+  document.getElementById('b-mins').classList.toggle('active', m === 'mins');
+  calc();
+}
+
+function calc() {
+  const aC = parseFloat(document.getElementById('aC').value);
+  const aM = parseFloat(document.getElementById('aM').value);
+  const tC = parseFloat(document.getElementById('tC').value) || 200;
+  const tM = parseFloat(document.getElementById('tM').value) || 90;
+
+  if (isNaN(aC) || isNaN(aM)) {
+    document.getElementById('placeholder').classList.remove('hidden');
+    document.getElementById('results').classList.add('hidden');
+    return;
+  }
+
+  document.getElementById('placeholder').classList.add('hidden');
+  document.getElementById('results').classList.remove('hidden');
+  document.getElementById('results').style.display = 'flex';
+
+  const cP = (aC / tC) * 100;
+  const mP = (aM / tM) * 100;
+  const apr = (cP + mP) / 2;
+
+  document.getElementById('apr-big').innerHTML = apr.toFixed(1) + '<span class="gauge-pct">%</span>';
+  document.getElementById('g-cpct').textContent = cP.toFixed(1) + '%';
+  document.getElementById('g-mpct').textContent = mP.toFixed(1) + '%';
+
+  const gs = document.getElementById('gauge-status');
+  if (apr >= 100) { gs.className = 'gauge-status gs-good'; gs.textContent = 'Target achieved'; }
+  else if (apr >= 75) { gs.className = 'gauge-status gs-warn'; gs.textContent = 'Almost there'; }
+  else { gs.className = 'gauge-status gs-bad'; gs.textContent = 'Below target'; }
+
+  const bw = Math.min(apr, 100).toFixed(1);
+  const bf = document.getElementById('bar-fill');
+  bf.style.width = bw + '%';
+  bf.className = 'bar-fill ' + (apr >= 100 ? 'g' : 'w');
+  document.getElementById('bar-label').textContent = apr.toFixed(1) + '%';
+
+  const mcCall = document.getElementById('mc-call');
+  const mcMin  = document.getElementById('mc-min');
+  document.getElementById('mc-call-val').textContent = cP.toFixed(1) + '%';
+  document.getElementById('mc-call-sub').textContent = Math.round(aC) + ' of ' + Math.round(tC) + ' calls';
+  document.getElementById('mc-min-val').textContent  = mP.toFixed(1) + '%';
+  document.getElementById('mc-min-sub').textContent  = Math.round(aM) + ' of ' + Math.round(tM) + ' minutes';
+
+  if (cP >= 80) { mcCall.classList.add('hi'); document.getElementById('mc-call-val').classList.add('hi'); }
+  else { mcCall.classList.remove('hi'); document.getElementById('mc-call-val').classList.remove('hi'); }
+  if (mP >= 80) { mcMin.classList.add('hi'); document.getElementById('mc-min-val').classList.add('hi'); }
+  else { mcMin.classList.remove('hi'); document.getElementById('mc-min-val').classList.remove('hi'); }
+
+  const ac = document.getElementById('ans-card');
+  const met = apr >= 100;
+
+  if (met) {
+    ac.className = 'ans-card met';
+    document.getElementById('ans-eyebrow').textContent = 'Status';
+    document.getElementById('ans-num').textContent = 'Target met!';
+    document.getElementById('ans-desc').textContent = 'Your APR of ' + apr.toFixed(1) + '% has already crossed the 100% target. Great work!';
+    document.getElementById('ans-formula').textContent = 'APR = (' + cP.toFixed(1) + '% + ' + mP.toFixed(1) + '%) ÷ 2 = ' + apr.toFixed(1) + '% ✓';
+    document.getElementById('ans-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10l5 5 7-8" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  } else if (mode === 'calls') {
+    ac.className = 'ans-card';
+    const needed = Math.max(0, Math.ceil((200 - mP) / 100 * tC));
+    document.getElementById('ans-eyebrow').textContent = 'Calls needed to reach 100% APR';
+    document.getElementById('ans-num').textContent = needed.toLocaleString();
+    document.getElementById('ans-desc').textContent = 'calls required given your ' + Math.round(aM) + ' min of talk time';
+    document.getElementById('ans-formula').textContent =
+      'calls% = 200% − ' + mP.toFixed(1) + '% = ' + (200-mP).toFixed(1) + '%\nneeded = ' + (200-mP).toFixed(1) + '% × ' + Math.round(tC) + ' ÷ 100 = ' + needed + ' calls';
+    document.getElementById('ans-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="6" width="5" height="12" rx="2" fill="white"/><rect x="9" y="2" width="5" height="16" rx="2" fill="white" opacity=".5"/></svg>`;
+  } else {
+    ac.className = 'ans-card';
+    const needed = Math.max(0, Math.ceil((200 - cP) / 100 * tM));
+    document.getElementById('ans-eyebrow').textContent = 'Minutes needed to reach 100% APR';
+    document.getElementById('ans-num').textContent = needed.toLocaleString();
+    document.getElementById('ans-desc').textContent = 'minutes of talk time required given your ' + Math.round(aC) + ' calls made';
+    document.getElementById('ans-formula').textContent =
+      'mins% = 200% − ' + cP.toFixed(1) + '% = ' + (200-cP).toFixed(1) + '%\nneeded = ' + (200-cP).toFixed(1) + '% × ' + Math.round(tM) + ' ÷ 100 = ' + needed + ' min';
+    document.getElementById('ans-icon').innerHTML = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="white" stroke-width="1.8"/><path d="M10 6.5V10.5L12.5 13" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+  }
+
+  // ── Corner widget ──
+  const cw = document.getElementById('corner-widget');
+  cw.classList.add('visible');
+
+  const cwNum  = document.getElementById('cw-num');
+  const cwUnit = document.getElementById('cw-unit');
+  const cwDesc = document.getElementById('cw-desc');
+  const cwBar  = document.getElementById('cw-bar');
+  const cwPct  = document.getElementById('cw-pct');
+  const cwLbl  = document.getElementById('cw-label');
+  const cwSvg  = document.getElementById('cw-svg');
+
+  if (met) {
+    cwLbl.textContent = '100% APR achieved';
+    cwNum.textContent = '✓';
+    cwNum.className = 'cw-num done';
+    cwUnit.textContent = '';
+    cwDesc.innerHTML = '<strong>Target reached!</strong> APR is ' + apr.toFixed(1) + '%';
+    cwBar.style.width = '100%';
+    cwBar.className = 'cw-bar-fill done';
+    cwPct.textContent = '100%';
+    cwSvg.innerHTML = `<path d="M2 7l4 4 6-7" stroke="#4ade80" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+  } else if (mode === 'calls') {
+    const totalNeeded = Math.max(0, Math.ceil((200 - mP) / 100 * tC));
+    const remaining   = Math.max(0, totalNeeded - Math.round(aC));
+    const progress    = Math.min(100, (Math.round(aC) / totalNeeded) * 100);
+    cwLbl.textContent = 'Remaining to 100% APR';
+    cwNum.textContent = remaining.toLocaleString();
+    cwNum.className = 'cw-num';
+    cwUnit.textContent = remaining === 1 ? 'call' : 'calls';
+    cwDesc.innerHTML = '<strong>' + Math.round(aC) + '</strong> done · <strong>' + totalNeeded + '</strong> total needed';
+    cwBar.style.width = progress.toFixed(1) + '%';
+    cwBar.className = 'cw-bar-fill';
+    cwPct.textContent = progress.toFixed(0) + '%';
+    cwSvg.innerHTML = `<rect x="1" y="3" width="4" height="10" rx="1.5" fill="#FF6B35"/><rect x="7" y="1" width="4" height="12" rx="1.5" fill="#FF6B35" opacity=".4"/>`;
+  } else {
+    const totalNeeded = Math.max(0, Math.ceil((200 - cP) / 100 * tM));
+    const remaining   = Math.max(0, totalNeeded - Math.round(aM));
+    const progress    = Math.min(100, (Math.round(aM) / totalNeeded) * 100);
+    cwLbl.textContent = 'Remaining to 100% APR';
+    cwNum.textContent = remaining.toLocaleString();
+    cwNum.className = 'cw-num';
+    cwUnit.textContent = remaining === 1 ? 'minute' : 'minutes';
+    cwDesc.innerHTML = '<strong>' + Math.round(aM) + '</strong> min done · <strong>' + totalNeeded + '</strong> min total needed';
+    cwBar.style.width = progress.toFixed(1) + '%';
+    cwBar.className = 'cw-bar-fill';
+    cwPct.textContent = progress.toFixed(0) + '%';
+    cwSvg.innerHTML = `<circle cx="7" cy="7" r="5.5" stroke="#FF6B35" stroke-width="1.5"/><path d="M7 4.5V7.5L9 9" stroke="#FF6B35" stroke-width="1.5" stroke-linecap="round"/>`;
+  }
+}
+</script>
+</body>
+</html>
