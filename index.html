@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>College Vidya - APR Performance Command Center</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --primary-blue: #1546D8;
+      --bright-blue: #2563EB;
+      --light-blue: #60A5FA;
+      --deep-navy: #071A3D;
+      --card-bg: rgba(13, 33, 73, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --input-bg: rgba(7, 26, 61, 0.6);
+      --white: #FFFFFF;
+      --light-gray: #F8FAFC;
+      --text-muted: #94A3B8;
+      --gold: #FFD700;
+      --premium-gold: #F5B942;
+      --gold-glow: rgba(245, 185, 66, 0.35);
+      --success-green: #00C084;
+      --warning-orange: #FF9F43;
+      --danger-red: #EF4444;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--deep-navy);
+      background-image: 
+        radial-gradient(circle at 10% 10%, rgba(21, 70, 216, 0.25) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.15) 0%, transparent 40%);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Watermark Layer */
+    .watermark-bg {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-30deg);
+      font-size: 7.5vw;
+      font-weight: 900;
+      color: rgba(255, 255, 255, 0.045);
+      letter-spacing: 10px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      text-transform: uppercase;
+    }
+
+    /* App Container Layout */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      width: 320px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid var(--card-border);
+      padding: 30px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      flex-shrink: 0;
+    }
+
+    .brand-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .brand-logo-wrapper {
+      width: 100%;
+      max-width: 220px;
+      height: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .brand-logo {
+      width: 100%;
+      max-height: 65px;
+      object-fit: contain;
+    }
+
+    .brand-tagline {
+      font-size: 11px;
+      color: var(--light-blue);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    .milestone-card {
+      background: linear-gradient(135deg, rgba(21, 70, 216, 0.3), rgba(7, 26, 61, 0.8));
+      border: 1px solid rgba(245, 185, 66, 0.3);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .milestone-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .milestone-val {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--premium-gold);
+      line-height: 1.1;
+    }
+
+    .milestone-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 1.5px;
+      margin-top: 4px;
+    }
+
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .nav-item.active, .nav-item:hover {
+      background: linear-gradient(90deg, rgba(37, 99, 235, 0.25), transparent);
+      color: var(--white);
+      border-left: 3px solid var(--bright-blue);
+    }
+
+    /* Main Dashboard Content */
+    .main-content {
+      flex: 1;
+      padding: 30px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Header Styling */
+    .executive-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 20px 32px;
+      gap: 20px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .header-logo-img {
+      height: 48px;
+      object-fit: contain;
+    }
+
+    .header-titles h1 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #FFFFFF, var(--light-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-titles p {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .live-clock-card {
+      text-align: right;
+    }
+
+    .clock-time {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--white);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .clock-date {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(0, 192, 132, 0.15);
+      color: var(--success-green);
+      border: 1px solid rgba(0, 192, 132, 0.3);
+      transition: var(--transition);
+    }
+
+    .badge-status.elite {
+      background: rgba(245, 185, 66, 0.2);
+      color: var(--premium-gold);
+      border-color: rgba(245, 185, 66, 0.5);
+      box-shadow: 0 0 15px var(--gold-glow);
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    /* Dashboard Layout Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 32px;
+    }
+
+    /* Cards Base */
+    .card-panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      position: relative;
+      transition: var(--transition);
+    }
+
+    .card-panel:hover {
+      border-color: rgba(37, 99, 235, 0.3);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Hero APR Card */
+    .hero-apr-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-apr-panel.gold-active {
+      border-color: rgba(245, 185, 66, 0.6);
+      box-shadow: 0 0 40px rgba(245, 185, 66, 0.25);
+    }
+
+    .apr-ring-wrapper {
+      position: relative;
+      width: 240px;
+      height: 240px;
+      margin: 20px 0;
+    }
+
+    .apr-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .apr-bg-circle {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.06);
+      stroke-width: 16;
+    }
+
+    .apr-progress-circle {
+      fill: none;
+      stroke: url(#aprGradient);
+      stroke-width: 16;
+      stroke-linecap: round;
+      stroke-dasharray: 628;
+      stroke-dashoffset: 628;
+      transition: stroke-dashoffset 1s ease-in-out, stroke 0.5s ease;
+      filter: drop-shadow(0 0 12px rgba(37, 99, 235, 0.5));
+    }
+
+    .gold-active .apr-progress-circle {
+      stroke: url(#goldGradient);
+      filter: drop-shadow(0 0 16px var(--premium-gold));
+    }
+
+    .apr-inner-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .apr-value {
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      line-height: 1;
+      background: linear-gradient(180deg, #FFFFFF 0%, #CBD5E1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .gold-active .apr-value {
+      background: linear-gradient(180deg, #FFF, var(--premium-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .apr-subtitle {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      margin-top: 6px;
+      text-transform: uppercase;
+    }
+
+    .trophy-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(245, 185, 66, 0.15);
+      border: 1px solid var(--premium-gold);
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--premium-gold);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: var(--transition);
+    }
+
+    .gold-active .trophy-badge {
+      opacity: 1;
+      transform: scale(1);
+      animation: floatTrophy 3s ease-in-out infinite;
+    }
+
+    @keyframes floatTrophy {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-6px) scale(1.05); }
+    }
+
+    /* Hero Metrics Grid */
+    .hero-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .kpi-card {
+      background: rgba(7, 26, 61, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      text-align: left;
+      transition: var(--transition);
+    }
+
+    .kpi-card:hover {
+      background: rgba(7, 26, 61, 0.8);
+      border-color: rgba(37, 99, 235, 0.3);
+    }
+
+    .kpi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .kpi-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .kpi-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--white);
+    }
+
+    .kpi-subtext {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Section Titles */
+    .panel-title-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .panel-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      background: rgba(37, 99, 235, 0.2);
+      color: var(--light-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .panel-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Dual Predictor Panel */
+    .predictor-card {
+      background: linear-gradient(135deg, rgba(21, 70, 216, 0.15), rgba(7, 26, 61, 0.6));
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .dual-req-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .req-box {
+      background: rgba(7, 26, 61, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      text-align: center;
+    }
+
+    .req-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--light-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .req-num {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--white);
+      margin: 4px 0;
+    }
+
+    .recommendation-banner {
+      background: rgba(255, 215, 0, 0.08);
+      border: 1px dashed rgba(255, 215, 0, 0.4);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: #FEE685;
+      line-height: 1.4;
+    }
+
+    /* Input Controls Panel */
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .input-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .custom-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 700;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .custom-input:focus {
+      border-color: var(--bright-blue);
+      box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .custom-input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .simulation-btns {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .sim-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      color: var(--white);
+      padding: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .sim-btn:hover {
+      background: var(--bright-blue);
+      border-color: var(--bright-blue);
+    }
+
+    /* APR Breakdown Section */
+    .breakdown-row {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .progress-bar-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .progress-bar-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      height: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, var(--primary-blue), var(--bright-blue));
+      transition: width 0.8s ease-in-out;
+    }
+
+    .progress-fill.gold {
+      background: linear-gradient(90deg, var(--premium-gold), var(--gold));
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(7, 26, 61, 0.85);
+      backdrop-filter: blur(16px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition);
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .celebration-modal {
+      background: var(--deep-navy);
+      border: 2px solid var(--premium-gold);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 50px var(--gold-glow);
+      transform: scale(0.8);
+      transition: var(--transition);
+    }
+
+    .modal-overlay.active .celebration-modal {
+      transform: scale(1);
+    }
+
+    .celebration-icon {
+      font-size: 60px;
+      margin-bottom: 16px;
+    }
+
+    .celebration-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--premium-gold);
+      margin-bottom: 8px;
+    }
+
+    .celebration-desc {
+      font-size: 14px;
+      color: var(--light-gray);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .btn-close-modal {
+      background: linear-gradient(135deg, var(--premium-gold), #D99B26);
+      color: var(--deep-navy);
+      border: none;
+      padding: 12px 32px;
+      border-radius: 30px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-close-modal:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--gold-glow);
+    }
+
+    /* Footer */
+    .footer-credits {
+      text-align: center;
+      padding: 20px 0;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      border-top: 1px solid var(--card-border);
+      margin-top: 20px;
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 1200px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .app-container {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+      }
+      .executive-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .header-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Watermark Layer -->
+  <div class="watermark-bg">DESIGNED BY HEMANT JHA</div>
+
+  <div class="app-container">
+    <!-- Sidebar Panel -->
+    <aside class="sidebar">
+      <div class="brand-container">
+        <div class="brand-logo-wrapper">
+          <img src="logo.png" alt="College Vidya" class="brand-logo" onerror="this.onerror=null; this.src='https://collegevidya.com/images/cv-logo.svg';">
+        </div>
+        <div class="brand-tagline">India's Leading Education Advisory</div>
+      </div>
+
+      <div class="milestone-card">
+        <div class="milestone-val">1 LAKH+</div>
+        <div class="milestone-label">ADMISSIONS CELEBRATED</div>
+      </div>
+
+      <nav class="nav-menu">
+        <a class="nav-item active">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Command Center</span>
+        </a>
+        <a class="nav-item">
+          <i data-lucide="line-chart"></i>
+          <span>APR Analytics</span>
+        </a>
+        <a class="nav-item">
+          <i data-lucide="award"></i>
+          <span>Performance</span>
+        </a>
+        <a class="nav-item">
+          <i data-lucide="sparkles"></i>
+          <span>APR Predictor</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Executive Header -->
+      <header class="executive-header">
+        <div class="header-left">
+          <img src="logo.png" alt="College Vidya Logo" class="header-logo-img" onerror="this.style.display='none'">
+          <div class="header-titles">
+            <h1>APR PERFORMANCE COMMAND CENTER</h1>
+            <p>Real-time Sales Performance Analytics & Target Predictor</p>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="live-clock-card">
+            <div class="clock-time" id="liveClock">--:--:--</div>
+            <div class="clock-date" id="liveDate">Loading date...</div>
+          </div>
+          <div class="badge-status" id="statusBadge">
+            <span class="badge-dot"></span>
+            <span id="statusText">Active Shift</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Grid -->
+      <div class="dashboard-grid">
+        
+        <!-- Hero APR Column -->
+        <div class="card-panel hero-apr-panel" id="heroPanel">
+          <div class="trophy-badge">
+            <i data-lucide="trophy" size="24"></i>
+          </div>
+
+          <div class="apr-ring-wrapper">
+            <svg class="apr-svg" viewBox="0 0 220 220">
+              <defs>
+                <linearGradient id="aprGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#1546D8" />
+                  <stop offset="100%" stop-color="#60A5FA" />
+                </linearGradient>
+                <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#FFD700" />
+                  <stop offset="100%" stop-color="#F5B942" />
+                </linearGradient>
+              </defs>
+              <circle class="apr-bg-circle" cx="110" cy="110" r="100" />
+              <circle class="apr-progress-circle" id="aprCircle" cx="110" cy="110" r="100" />
+            </svg>
+            <div class="apr-inner-content">
+              <div class="apr-value" id="aprValueDisplay">0.00%</div>
+              <div class="apr-subtitle">CURRENT APR</div>
+            </div>
+          </div>
+
+          <!-- 4 Main Hero Metrics -->
+          <div class="hero-kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">CALLS ACHIEVEMENT</span>
+                <i data-lucide="phone-call" size="16"></i>
+              </div>
+              <div class="kpi-value" id="callsAchDisplay">0%</div>
+              <div class="kpi-subtext" id="callsRawDisplay">0 / 200 calls</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">TALK TIME ACH.</span>
+                <i data-lucide="clock" size="16"></i>
+              </div>
+              <div class="kpi-value" id="talkAchDisplay">0%</div>
+              <div class="kpi-subtext" id="talkRawDisplay">0 / 90 mins</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">CALLS REQUIRED</span>
+                <i data-lucide="target" size="16"></i>
+              </div>
+              <div class="kpi-value" id="callsReqDisplay">0</div>
+              <div class="kpi-subtext">Additional Calls (100% APR)</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">TALK TIME REQUIRED</span>
+                <i data-lucide="hourglass" size="16"></i>
+              </div>
+              <div class="kpi-value" id="talkReqDisplay">0 mins</div>
+              <div class="kpi-subtext">Additional Mins (100% APR)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Predictor & Input Controls Column -->
+        <div style="display: flex; flex-direction: column; gap: 32px;">
+          
+          <!-- APR Completion Predictor -->
+          <div class="card-panel">
+            <div class="panel-title-wrapper">
+              <div class="panel-icon"><i data-lucide="sparkles" size="20"></i></div>
+              <div>
+                <div class="panel-title">APR COMPLETION PREDICTOR</div>
+                <div class="panel-subtitle">Dual-Pathway Recommendations to 100% APR</div>
+              </div>
+            </div>
+
+            <div class="predictor-card">
+              <div style="text-align: center; font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">REQUIRED ACTION FOR 100% APR</div>
+              <div class="dual-req-grid">
+                <div class="req-box">
+                  <div class="req-title">CALLS PATHWAY</div>
+                  <div class="req-num" id="predCallsNum">0</div>
+                  <div style="font-size: 11px; color: var(--text-muted);">Additional Calls</div>
+                </div>
+                <div class="req-box">
+                  <div class="req-title">TALK TIME PATHWAY</div>
+                  <div class="req-num" id="predTalkNum">0</div>
+                  <div style="font-size: 11px; color: var(--text-muted);">Additional Minutes</div>
+                </div>
+              </div>
+              <div class="recommendation-banner" id="recommendationText">
+                <i data-lucide="lightbulb" size="18" style="flex-shrink:0;"></i>
+                <span>Calculating recommendation...</span>
+              </div>
+            </div>
+
+            <!-- Input Configuration -->
+            <div class="panel-title-wrapper" style="margin-top: 10px; margin-bottom: 16px;">
+              <div class="panel-icon"><i data-lucide="sliders" size="20"></i></div>
+              <div>
+                <div class="panel-title">INPUT CONFIGURATION</div>
+                <div class="panel-subtitle">Update daily stats to calculate APR</div>
+              </div>
+            </div>
+
+            <div class="inputs-grid">
+              <div class="input-group">
+                <div class="input-label">
+                  <span>Calls Completed Today</span>
+                  <i data-lucide="phone-outgoing" size="14"></i>
+                </div>
+                <input type="number" id="callsInput" class="custom-input" value="200" min="0">
+              </div>
+
+              <div class="input-group">
+                <div class="input-label">
+                  <span>Talk Time (Minutes)</span>
+                  <i data-lucide="mic" size="14"></i>
+                </div>
+                <input type="number" id="talkInput" class="custom-input" value="76" min="0">
+              </div>
+
+              <div class="input-group">
+                <div class="input-label">Target Calls (Fixed)</div>
+                <input type="number" class="custom-input" value="200" disabled>
+              </div>
+
+              <div class="input-group">
+                <div class="input-label">Target Minutes (Fixed)</div>
+                <input type="number" class="custom-input" value="90" disabled>
+              </div>
+            </div>
+
+            <div class="simulation-btns">
+              <button class="sim-btn" onclick="addSim(10, 0)">+10 Calls</button>
+              <button class="sim-btn" onclick="addSim(0, 15)">+15 Mins</button>
+              <button class="sim-btn" onclick="setSim(200, 90)">Set 100%</button>
+              <button class="sim-btn" onclick="setSim(0, 0)">Reset</button>
+            </div>
+          </div>
+
+          <!-- APR Breakdown Panel -->
+          <div class="card-panel">
+            <div class="panel-title-wrapper">
+              <div class="panel-icon"><i data-lucide="bar-chart-3" size="20"></i></div>
+              <div>
+                <div class="panel-title">APR BREAKDOWN & PROGRESS</div>
+                <div class="panel-subtitle">Component Target Compliance</div>
+              </div>
+            </div>
+
+            <div class="breakdown-row">
+              <div class="progress-bar-wrapper">
+                <div class="progress-bar-header">
+                  <span>CALLS COMPLIANCE</span>
+                  <span id="callsBarVal">0%</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="callsBarFill" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <div class="progress-bar-wrapper">
+                <div class="progress-bar-header">
+                  <span>TALK TIME COMPLIANCE</span>
+                  <span id="talkBarVal">0%</span>
+                </div>
+                <div class="progress-track">
+                  <div class="progress-fill" id="talkBarFill" style="width: 0%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <footer class="footer-credits">
+        College Vidya APR Command Center | DESIGNED BY HEMANT JHA
+      </footer>
+    </main>
+  </div>
+
+  <!-- Celebration Modal -->
+  <div class="modal-overlay" id="celebrationModal">
+    <div class="celebration-modal">
+      <div class="celebration-icon">🏆</div>
+      <div class="celebration-title">100% APR ACHIEVED!</div>
+      <div class="celebration-desc">
+        ELITE PERFORMANCE UNLOCKED!<br>
+        Congratulations! You have successfully reached the peak APR milestone. Keep leading the way!
+      </div>
+      <button class="btn-close-modal" onclick="closeModal()">ACCEPT ACCOLADE</button>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // DOM References
+    const TARGET_CALLS = 200;
+    const TARGET_TALK = 90;
+
+    const callsInput = document.getElementById('callsInput');
+    const talkInput = document.getElementById('talkInput');
+
+    const aprValueDisplay = document.getElementById('aprValueDisplay');
+    const aprCircle = document.getElementById('aprCircle');
+    const heroPanel = document.getElementById('heroPanel');
+    const statusBadge = document.getElementById('statusBadge');
+    const statusText = document.getElementById('statusText');
+
+    const callsAchDisplay = document.getElementById('callsAchDisplay');
+    const callsRawDisplay = document.getElementById('callsRawDisplay');
+    const talkAchDisplay = document.getElementById('talkAchDisplay');
+    const talkRawDisplay = document.getElementById('talkRawDisplay');
+
+    const callsReqDisplay = document.getElementById('callsReqDisplay');
+    const talkReqDisplay = document.getElementById('talkReqDisplay');
+
+    const predCallsNum = document.getElementById('predCallsNum');
+    const predTalkNum = document.getElementById('predTalkNum');
+    const recommendationText = document.getElementById('recommendationText');
+
+    const callsBarVal = document.getElementById('callsBarVal');
+    const callsBarFill = document.getElementById('callsBarFill');
+    const talkBarVal = document.getElementById('talkBarVal');
+    const talkBarFill = document.getElementById('talkBarFill');
+
+    const celebrationModal = document.getElementById('celebrationModal');
+
+    let hasCelebrated = false;
+
+    // Live Clock Function
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('liveClock').textContent = now.toLocaleTimeString();
+      document.getElementById('liveDate').textContent = now.toLocaleDateString(undefined, {
+        weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+      });
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Core Dual-Requirement Calculation Logic
+    function calculateAndUpdate() {
+      const callsDone = parseFloat(callsInput.value) || 0;
+      const talkDone = parseFloat(talkInput.value) || 0;
+
+      // 1. Calculate Uncapped Achievements
+      const callsAch = (callsDone / TARGET_CALLS) * 100;
+      const talkAch = (talkDone / TARGET_TALK) * 100;
+
+      // 2. Calculate Final APR (Uncapped)
+      const finalAPR = (callsAch + talkAch) / 2;
+
+      // 3. Dual Pathway Calculations to reach exactly 100% APR
+      const rawAddCalls = Math.ceil((2 - (talkAch / 100)) * TARGET_CALLS - callsDone);
+      const addCallsReq = Math.max(0, rawAddCalls);
+
+      const rawAddTalk = Math.ceil((2 - (callsAch / 100)) * TARGET_TALK - talkDone);
+      const addTalkReq = Math.max(0, rawAddTalk);
+
+      // Render Display Values
+      aprValueDisplay.textContent = finalAPR.toFixed(2) + '%';
+      
+      callsAchDisplay.textContent = callsAch.toFixed(2) + '%';
+      callsRawDisplay.textContent = `${callsDone} / ${TARGET_CALLS} calls`;
+
+      talkAchDisplay.textContent = talkAch.toFixed(2) + '%';
+      talkRawDisplay.textContent = `${talkDone} / ${TARGET_TALK} mins`;
+
+      callsReqDisplay.textContent = addCallsReq;
+      talkReqDisplay.textContent = `${addTalkReq} mins`;
+
+      predCallsNum.textContent = addCallsReq;
+      predTalkNum.textContent = addTalkReq;
+
+      // Render Breakdown Bars (Visual Cap at 100% for progress bars)
+      callsBarVal.textContent = callsAch.toFixed(2) + '%';
+      callsBarFill.style.width = Math.min(callsAch, 100) + '%';
+
+      talkBarVal.textContent = talkAch.toFixed(2) + '%';
+      talkBarFill.style.width = Math.min(talkAch, 100) + '%';
+
+      // SVG Circle Progress (Circumference = 2 * PI * 100 = 628)
+      const circumference = 628;
+      const visualApr = Math.min(finalAPR, 100);
+      const offset = circumference - (visualApr / 100) * circumference;
+      aprCircle.style.strokeDashoffset = offset;
+
+      // Recommendation Text
+      if (finalAPR >= 100) {
+        recommendationText.innerHTML = `
+          <i data-lucide="trophy" size="18" style="flex-shrink:0;"></i>
+          <span><strong>🏆 Target Achieved!</strong> You have achieved 100%+ APR. No additional calls or talk time required.</span>
+        `;
+      } else {
+        recommendationText.innerHTML = `
+          <i data-lucide="lightbulb" size="18" style="flex-shrink:0;"></i>
+          <span>To reach 100% APR, you need either <strong>${addCallsReq} additional calls</strong> OR <strong>${addTalkReq} additional talk-time minutes</strong>.</span>
+        `;
+      }
+      lucide.createIcons();
+
+      // Elite Perform State & Celebrations
+      if (finalAPR >= 100) {
+        heroPanel.classList.add('gold-active');
+        statusBadge.classList.add('elite');
+        statusText.textContent = 'Elite Performer 🏆';
+        callsBarFill.classList.add('gold');
+        talkBarFill.classList.add('gold');
+
+        if (!hasCelebrated) {
+          triggerCelebration();
+          hasCelebrated = true;
+        }
+      } else {
+        heroPanel.classList.remove('gold-active');
+        statusBadge.classList.remove('elite');
+        statusText.textContent = 'Active Shift';
+        callsBarFill.classList.remove('gold');
+        talkBarFill.classList.remove('gold');
+        hasCelebrated = false;
+      }
+    }
+
+    // Celebration Confetti & Modal
+    function triggerCelebration() {
+      celebrationModal.classList.add('active');
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+    }
+
+    function closeModal() {
+      celebrationModal.classList.remove('active');
+    }
+
+    // Quick Simulation Helpers
+    function addSim(calls, mins) {
+      callsInput.value = (parseFloat(callsInput.value) || 0) + calls;
+      talkInput.value = (parseFloat(talkInput.value) || 0) + mins;
+      calculateAndUpdate();
+    }
+
+    function setSim(calls, mins) {
+      callsInput.value = calls;
+      talkInput.value = mins;
+      calculateAndUpdate();
+    }
+
+    // Input Event Listeners
+    callsInput.addEventListener('input', calculateAndUpdate);
+    talkInput.addEventListener('input', calculateAndUpdate);
+
+    // Initial Trigger
+    calculateAndUpdate();
+  </script>
+</body>
+</html>
